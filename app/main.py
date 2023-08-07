@@ -89,16 +89,19 @@ def get_a_recc(token):
 
 # available_genres = get_genres(token)
 # print(available_genres)
-token = get_token()
-recc_data = get_a_recc(token)
-artist = recc_data["tracks"][0]["artists"][0]["name"]
-song_title = recc_data["tracks"][0]["name"]
-song_id = recc_data["tracks"][0]["id"]
-song_preview = recc_data["tracks"][0]["preview_url"]
-print("artist:", artist)
-print("song title:", song_title)
-print("song id: ", song_id)
-print("preview:" , song_preview)
+
+
+
+# token = get_token()
+# recc_data = get_a_recc(token)
+# artist = recc_data["tracks"][0]["artists"][0]["name"]
+# song_title = recc_data["tracks"][0]["name"]
+# song_id = recc_data["tracks"][0]["id"]
+# song_preview = recc_data["tracks"][0]["preview_url"]
+# print("artist:", artist)
+# print("song title:", song_title)
+# print("song id: ", song_id)
+# print("preview:" , song_preview)
 
 # for index, song in enumerate(songs):
 #     print(f"{index + 1 }.{song['name']}")

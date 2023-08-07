@@ -15,24 +15,29 @@ class DJ(db.Model):
             "id": self.user_id,
             "name": self.name,
             "logged_in": self.logged_in,
-            "user_prefs": {},
+            "user_prefs": self.user_prefs,
             "saved_playlists": [{}]
         }
     
     @classmethod
     def initial_prefs_from_dict(cls, preferences):
-        user_initial_prefs = {
-        "token": preferences["token"],
-        "limit": preferences["limit"],
-        "market": preferences["market"],
-        "artist_seeds": preferences["artist_seeds"],
-        "genre_seeds" : preferences["genre_seeds"],
-        "track_seeds": preferences["track_seeds"],
-        "danceability": preferences["danceability"],
-        "max_mode" : preferences["max_mode"],
-        "popularity" : preferences["popularity"],
-        "valence" : preferences["valence"]
-        }
+        user_initial_prefs = {}
+        for key, value in preferences.items():
+            if key not in user_initial_prefs:
+                user_initial_prefs[key] = value
+
+        # {
+        # "token": preferences["token"],
+        # "limit": preferences["limit"],
+        # "market": preferences["market"],
+        # "artist_seeds": preferences["artist_seeds"],
+        # "genre_seeds" : preferences["genre_seeds"],
+        # "track_seeds": preferences["track_seeds"],
+        # "danceability": preferences["danceability"],
+        # "max_mode" : preferences["max_mode"],
+        # "popularity" : preferences["popularity"],
+        # "valence" : preferences["valence"]
+        # }
         
         return user_initial_prefs
 
