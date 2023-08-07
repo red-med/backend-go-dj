@@ -6,8 +6,38 @@ class DJ(db.Model):
     name = db.Column(db.String)
     logged_in = db.Column(db.Boolean, default = False)
     # relational DB stuff 
-    user_prefs =  db.Column(db.ARRAY(db.PickleType), nullable = True)
+    user_prefs =  db.Column(db.PickleType, nullable = True)
     saved_playlists = db.Column(db.ARRAY(db.PickleType), nullable = True)
-    
 
+
+    def to_dict(self):
+        return {
+            "id": self.user_id,
+            "name": self.name,
+            "logged_in": self.logged_in,
+            "user_prefs": {},
+            "saved_playlists": [{}]
+        }
     
+    @classmethod
+    def initial_prefs_from_dict(cls, preferences):
+        user_initial_prefs = {
+        "token": preferences["token"],
+        "limit": preferences["limit"],
+        "market": preferences["market"],
+        "artist_seeds": preferences["artist_seeds"],
+        "genre_seeds" : preferences["genre_seeds"],
+        "track_seeds": preferences["track_seeds"],
+        "danceability": preferences["danceability"],
+        "max_mode" : preferences["max_mode"],
+        "popularity" : preferences["popularity"],
+        "valence" : preferences["valence"]
+        }
+        
+        return user_initial_prefs
+
+    @classmethod
+    def from_dict(cls, user_data):
+        return cls(
+            name=user_data["name"])
+        

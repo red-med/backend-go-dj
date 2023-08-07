@@ -39,7 +39,7 @@ def create_app():
     # def hello_world():
     #     return "<p>Hello World!</p>"
     
-    @app.route("/start", methods=["GET"])
+    @app.route("/start1", methods=["GET"])
     def get_initial_token():
         auth_string = client_id + ":" + client_secret
         auth_bytes = auth_string.encode("utf-8")
@@ -97,7 +97,6 @@ def create_app():
             "song_preview": song_preview
         }
         return response, 200
-
 
 
     CORS(app)
