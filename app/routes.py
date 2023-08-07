@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, make_response
 from app import db
-from app.models.user import User
+from app.models.dj import DJ
 from app.main import get_token, get_auth_header
 import requests 
 import json
@@ -12,7 +12,11 @@ client_secret = os.getenv("CLIENT_SECRET")
 TOKEN = get_token()
 AUTH_HEADER = get_auth_header(TOKEN)
 
-user_bp = Blueprint("user_bp", __name__, url_prefix="")
+dj_bp = Blueprint("dj_bp", __name__, url_prefix="")
+
+@dj_bp.route("/hello")
+def hello_world():
+    return "<p>Hello World!</p>"
 
 
 # user_bp.route("/start", methods="GET")

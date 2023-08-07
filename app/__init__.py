@@ -24,7 +24,7 @@ def create_app():
 
     # Import models here for Alembic setup
     # from app.models.ExampleModel import ExampleModel
-    from .models.user import User
+    from .models.dj import DJ
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -32,12 +32,12 @@ def create_app():
     # Register Blueprints here
     # from .routes import example_bp
     # app.register_blueprint(example_bp)
-    from app.routes import user_bp
-    app.register_blueprint(user_bp)
+    from app.routes import dj_bp
+    app.register_blueprint(dj_bp)
 
-    @app.route("/hello")
-    def hello_world():
-        return "<p>Hello World!</p>"
+    # @app.route("/hello")
+    # def hello_world():
+    #     return "<p>Hello World!</p>"
     
     @app.route("/start", methods=["GET"])
     def get_initial_token():
