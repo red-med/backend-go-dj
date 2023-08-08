@@ -70,26 +70,53 @@ def get_track_question(user_id):
     db.session.commit()
 
     # return make_response(jsonify({"DJ": user.to_dict()}), 200)
+    if "tempo" not in preferences:
+        temp_token = get_initial_token()
+        url = "https://api.spotify.com/v1/recommendations"
+        headers = get_auth_header(temp_token)
+        params = f"?limit={user.user_prefs['limit']}&market={user.user_prefs['market']}&seed_artists={user.user_prefs['artist_seeds']}&seed_genres={user.user_prefs['genre_seeds']}&seed_tracks={user.user_prefs['track_seeds']}&target_danceability={user.user_prefs['danceability']}&max_mode={user.user_prefs['max_mode']}&target_popularity={user.user_prefs['popularity']}&target_valence={user.user_prefs['valence']}"
+        query_url = url + params
+        result = requests.get(query_url, headers=headers)
+        json_result = json.loads(result.content)
+        artist = json_result["tracks"][0]["artists"][0]["name"]
+        song_title = json_result["tracks"][0]["name"]
+        song_id = json_result["tracks"][0]["id"]
+        song_preview = json_result["tracks"][0]["preview_url"]
+            #could put token in post request body OR as a cookie. 
+        response = {
+                "artist": artist,
+                "song title": song_title,
+                "song_id": song_id,
+                "song_preview": song_preview
+            }
+        return response, 200
+    else: #THIS WILL BE THE PROTOCOL FOR THE SECOND AND FINAL SEARCH 
+        temp_token = get_initial_token()
+        url = "https://api.spotify.com/v1/recommendations"
+        headers = get_auth_header(temp_token)
+        params = f"?limit={10}&market={user.user_prefs['market']}&seed_artists={user.user_prefs['artist_seeds']}&seed_genres={user.user_prefs['genre_seeds']}&seed_tracks={user.user_prefs['track_seeds']}&target_danceability={user.user_prefs['danceability']}&max_mode={user.user_prefs['max_mode']}&target_popularity={user.user_prefs['popularity']}&target_tempo={user.user_prefs['tempo']}&target_valence={user.user_prefs['valence']}"
+        query_url = url + params
+        result = requests.get(query_url, headers=headers)
+        json_result = json.loads(result.content)
+        response = []
+        # song_data = {}
+        for i in range(9):
+            artist = json_result["tracks"][i]["artists"][0]["name"]
+            song_title = json_result["tracks"][i]["name"]
+            song_id = json_result["tracks"][i]["id"]
+            song_preview = json_result["tracks"][i]["preview_url"]
+            song_data = {
+                "artist": artist,
+                "song title": song_title,
+                "song_id": song_id,
+                "song_preview": song_preview
+            }
+            response.append(song_data)
+        return jsonify(response), 200
 
-    temp_token = user.user_prefs["token"]
-    url = "https://api.spotify.com/v1/recommendations"
-    headers = get_auth_header(temp_token)
-    params = f"?limit={user.user_prefs['limit']}&market={user.user_prefs['market']}&seed_artists={user.user_prefs['artist_seeds']}&seed_genres={user.user_prefs['genre_seeds']}&seed_tracks={user.user_prefs['track_seeds']}&target_danceability={user.user_prefs['danceability']}&max_mode={user.user_prefs['max_mode']}&target_popularity={user.user_prefs['popularity']}&target_valence={user.user_prefs['valence']}"
-    query_url = url + params
-    result = requests.get(query_url, headers=headers)
-    json_result = json.loads(result.content)
-    artist = json_result["tracks"][0]["artists"][0]["name"]
-    song_title = json_result["tracks"][0]["name"]
-    song_id = json_result["tracks"][0]["id"]
-    song_preview = json_result["tracks"][0]["preview_url"]
-        #could put token in post request body OR as a cookie. 
-    response = {
-            "artist": artist,
-            "song title": song_title,
-            "song_id": song_id,
-            "song_preview": song_preview
-        }
-    return response, 200
+
+
+
     
 def validate_user(model, user_id):
     try:
