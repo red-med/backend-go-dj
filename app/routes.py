@@ -70,7 +70,7 @@ def get_track_question(user_id):
     db.session.commit()
 
     # return make_response(jsonify({"DJ": user.to_dict()}), 200)
-    if "tempo" not in preferences:
+    if "seed_tracks" not in preferences:
         temp_token = get_initial_token()
         url = "https://api.spotify.com/v1/recommendations"
         headers = get_auth_header(temp_token)
@@ -101,22 +101,27 @@ def get_track_question(user_id):
         temp_token = get_initial_token()
         url = "https://api.spotify.com/v1/recommendations"
         headers = get_auth_header(temp_token)
-        params = f"?limit={10}&market={user.user_prefs['market']}&seed_artists={user.user_prefs['artist_seeds']}&seed_genres={user.user_prefs['genre_seeds']}&seed_tracks={user.user_prefs['track_seeds']}&target_danceability={user.user_prefs['danceability']}&max_mode={user.user_prefs['max_mode']}&target_popularity={user.user_prefs['popularity']}&target_tempo={user.user_prefs['tempo']}&target_valence={user.user_prefs['valence']}"
+        # params = f"?limit={10}&market={user.user_prefs['market']}&seed_artists={user.user_prefs['artist_seeds']}&seed_genres={user.user_prefs['genre_seeds']}&seed_tracks={user.user_prefs['track_seeds']}&target_danceability={user.user_prefs['danceability']}&max_mode={user.user_prefs['max_mode']}&target_popularity={user.user_prefs['popularity']}&target_tempo={user.user_prefs['tempo']}&target_valence={user.user_prefs['valence']}"
+        params="?"
+        for key, value in user.user_prefs.items():
+            params+= f"{key}={value}&"
         query_url = url + params
         result = requests.get(query_url, headers=headers)
         json_result = json.loads(result.content)
         response = []
         # song_data = {}
-        for i in range(9):
+        for i in range(10):
             artist = json_result["tracks"][i]["artists"][0]["name"]
             song_title = json_result["tracks"][i]["name"]
             song_id = json_result["tracks"][i]["id"]
             song_preview = json_result["tracks"][i]["preview_url"]
+            photo = json_result["tracks"][i]["album"]["images"][1]
             song_data = {
                 "artist": artist,
-                "song title": song_title,
+                "song_title": song_title,
                 "song_id": song_id,
-                "song_preview": song_preview
+                "song_preview": song_preview,
+                "album_art": photo
             }
             response.append(song_data)
         return jsonify(response), 200
