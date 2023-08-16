@@ -11,13 +11,13 @@ client_secret = os.getenv("CLIENT_SECRET")
 TOKEN = get_token()
 AUTH_HEADER = get_auth_header(TOKEN)
 
-dj_bp = Blueprint("dj_bp", __name__, url_prefix="")
+dj_bp = Blueprint("dj_bp", __name__, url_prefix="/start")
 
 @dj_bp.route("/hello")
 def hello_world():
     return "<p>Hello World!</p>"
 
-@dj_bp.route("/start1", methods =["POST"])
+@dj_bp.route("", methods =["POST"])
 def create_new_user():
     request_body = request.get_json()
     if "name" not in request_body: 
@@ -28,7 +28,7 @@ def create_new_user():
     db.session.commit()
     return make_response({"DJ": new_user.to_dict()}, 201)
 
-@dj_bp.route("/start1", methods=["GET"])
+@dj_bp.route("", methods=["GET"])
 def get_all_DJs():
     response = []
     all_DJs = DJ.query.all()
@@ -38,7 +38,7 @@ def get_all_DJs():
     return jsonify(response), 200
 
 
-@dj_bp.route("/start1/<user_id>", methods=["DELETE"])
+@dj_bp.route("/<user_id>", methods=["DELETE"])
 def delete_user(user_id):
     user = validate_user(DJ, user_id)
     db.session.delete(user)
@@ -69,12 +69,12 @@ def get_initial_token():
 def get_auth_header(token):
     return {"Authorization" : "Bearer " + token}
 
-@dj_bp.route("start1/<user_id>", methods=["GET"])
+@dj_bp.route("/<user_id>", methods=["GET"])
 def get_one_dj(user_id):
     user = validate_user(DJ, user_id)
     return make_response({"DJ": user.to_dict()}, 200)
 
-@dj_bp.route("/start1/<user_id>", methods=["PATCH"])
+@dj_bp.route("/<user_id>", methods=["PATCH"])
     # cross origin allow headers OR supports credentials
 def get_track_question(user_id):
     # POTENTIAL PARAMETERS: token, limit, market, danceability, max_mode, popularity, valence, artist_seeds = None, track_seeds = None, genre_seeds = None
