@@ -6,7 +6,6 @@ import requests
 import json
 import os, base64
 
-# example_bp = Blueprint('example_bp', __name__)
 client_id = os.getenv("CLIENT_ID")
 client_secret = os.getenv("CLIENT_SECRET")
 TOKEN = get_token()
@@ -30,6 +29,24 @@ def create_new_user():
     return make_response({"DJ": new_user.to_dict()}, 201)
 
 @dj_bp.route("/start1", methods=["GET"])
+def get_all_DJs():
+    response = []
+    all_DJs = DJ.query.all()
+
+    for dj in all_DJs:
+        response.append(dj.to_dict())
+    return jsonify(response), 200
+
+
+@dj_bp.route("/start1/<user_id>", methods=["DELETE"])
+def delete_user(user_id):
+    user = validate_user(DJ, user_id)
+    db.session.delete(user)
+    db.session.commit()
+    return make_response({"details": f"DJ with user ID {user.user_id} and name \"{user.name}\" successfully deleted"}, 200)
+
+
+# @dj_bp.route("/start1", methods=["GET"])
 def get_initial_token():
         auth_string = client_id + ":" + client_secret
         auth_bytes = auth_string.encode("utf-8")
@@ -105,6 +122,9 @@ def get_track_question(user_id):
         params="?"
         for key, value in user.user_prefs.items():
             params+= f"{key}={value}&"
+        # audio_features = get_audio_features()
+        # for key, value in user.user_prefs.items():
+        #     params+= f"{key}={value}&"
         query_url = url + params
         result = requests.get(query_url, headers=headers)
         json_result = json.loads(result.content)
@@ -125,10 +145,6 @@ def get_track_question(user_id):
             }
             response.append(song_data)
         return jsonify(response), 200
-
-
-
-
     
 def validate_user(model, user_id):
     try:
@@ -137,5 +153,23 @@ def validate_user(model, user_id):
         return abort(make_response({"message": f"invalid id: {user_id}"}, 400))
     return model.query.get_or_404(user_id, description=f"{model.__name__} with id {user_id} not found")
 
-# # user_bp.route("/start", methods="GET")
-# # def get_artist(TOKEN):
+def get_audio_features(song_id, temp_token):
+    # temp_token = get_initial_token()
+    url = f"https://api.spotify.com/v1/audio-features/{song_id}"
+    headers = get_auth_header(temp_token)
+    result = requests.get(url, headers=headers)
+    json_result = json.loads(result.content)
+    print(json_result)
+    max_key = json_result["key" + 1]
+    min_key = json_result["key" -1]
+    min_tempo = json_result["tempo" -10]
+    max_tempo = json_result["tempo" + 10]
+    target_time_signature = json_result["time_signature"]
+    audio_features = {
+        "min_key": min_key,
+        "max_key" : max_key,
+        "min_tempo" : min_tempo,
+        "max_tempo": max_tempo,
+        "target_time_signture": target_time_signature
+    }
+    return audio_features
