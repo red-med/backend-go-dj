@@ -39,7 +39,7 @@ def create_app():
     # def hello_world():
     #     return "<p>Hello World!</p>"
     
-    @app.route("/start1", methods=["GET"])
+    @app.route("/start", methods=["GET"])
     def get_initial_token():
         auth_string = client_id + ":" + client_secret
         auth_bytes = auth_string.encode("utf-8")
