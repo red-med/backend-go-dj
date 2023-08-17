@@ -163,10 +163,10 @@ def get_audio_features(song_id, temp_token):
     result = requests.get(url, headers=headers)
     json_result = json.loads(result.content)
     print(json_result)
-    max_key = json_result["key" + 1]
-    min_key = json_result["key" -1]
-    min_tempo = json_result["tempo" -5]
-    max_tempo = json_result["tempo" + 5]
+    max_key = json_result["key"] + 1
+    min_key = json_result["key"] - 1
+    min_tempo = json_result["tempo"]- 5
+    max_tempo = json_result["tempo"] + 5
     target_time_signature = json_result["time_signature"]
     audio_features = {
         "min_key": min_key,
