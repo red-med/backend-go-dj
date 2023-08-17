@@ -133,7 +133,7 @@ def get_track_question(user_id):
         json_result = json.loads(result.content)
         response = []
         # song_data = {}
-        for i in range(10):
+        for i in range(len(json_result["tracks"])):
             artist = json_result["tracks"][i]["artists"][0]["name"]
             song_title = json_result["tracks"][i]["name"]
             song_id = json_result["tracks"][i]["id"]
