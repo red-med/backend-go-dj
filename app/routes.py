@@ -85,10 +85,11 @@ def get_track_question(user_id):
     user_prefs = DJ.initial_prefs_from_dict(preferences)
     user.user_prefs=user_prefs
     db.session.commit()
+    temp_token = get_initial_token()
 
     # return make_response(jsonify({"DJ": user.to_dict()}), 200)
     if "seed_tracks" not in preferences:
-        temp_token = get_initial_token()
+        
         url = "https://api.spotify.com/v1/recommendations"
         headers = get_auth_header(temp_token)
         params="?"
@@ -115,16 +116,18 @@ def get_track_question(user_id):
             }
         return response, 200
     else: #THIS WILL BE THE PROTOCOL FOR THE SECOND AND FINAL SEARCH 
-        temp_token = get_initial_token()
+        # beginning of logic from BPM
+        recc_audio_features = get_audio_features(user.user_prefs["seed_tracks"], temp_token)
+
         url = "https://api.spotify.com/v1/recommendations"
         headers = get_auth_header(temp_token)
         # params = f"?limit={10}&market={user.user_prefs['market']}&seed_artists={user.user_prefs['artist_seeds']}&seed_genres={user.user_prefs['genre_seeds']}&seed_tracks={user.user_prefs['track_seeds']}&target_danceability={user.user_prefs['danceability']}&max_mode={user.user_prefs['max_mode']}&target_popularity={user.user_prefs['popularity']}&target_tempo={user.user_prefs['tempo']}&target_valence={user.user_prefs['valence']}"
         params="?"
         for key, value in user.user_prefs.items():
             params+= f"{key}={value}&"
-        # audio_features = get_audio_features()
-        # for key, value in user.user_prefs.items():
-        #     params+= f"{key}={value}&"
+        
+        for key, value in recc_audio_features.items():
+            params+= f"{key}={value}&"
         query_url = url + params
         result = requests.get(query_url, headers=headers)
         json_result = json.loads(result.content)
@@ -162,8 +165,8 @@ def get_audio_features(song_id, temp_token):
     print(json_result)
     max_key = json_result["key" + 1]
     min_key = json_result["key" -1]
-    min_tempo = json_result["tempo" -10]
-    max_tempo = json_result["tempo" + 10]
+    min_tempo = json_result["tempo" -5]
+    max_tempo = json_result["tempo" + 5]
     target_time_signature = json_result["time_signature"]
     audio_features = {
         "min_key": min_key,
