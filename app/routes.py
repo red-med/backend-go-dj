@@ -147,7 +147,7 @@ def get_track_question(user_id):
                 "album_art": photo
             }
             response.append(song_data)
-        user.saved_playlists = response
+        user.saved_playlists.append(response)
         db.session.commit()
         return jsonify(response), 200
     
